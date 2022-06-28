@@ -10,11 +10,16 @@ def slowText (text):
 		sys.stdout.flush()
 		#time.sleep(0.1) activame
 
-def statusBar(player,enemy, turn):
-	print(f'\n------------------------------- Barra de Status -------------------------------------------',#screen
-		  '\npuntos de vida de ->{}<-: {}/{}  -  energia: {} / {} - Mana:{} / {} - estado:{}'.format( player.name, round(player.life,2), player.maxLife, player.energy, player.maxEnergy,player.mana,player.maxMana, player.states) ,
-		  '\npuntos de vida de ->{}<-: {}/{}  -  energia: {} / {} - Mana:{} / {} - estado:{}\nturno: {}\n'.format(enemy.name, round(enemy.life,  2) , enemy.maxLife, enemy.energy, enemy.maxEnergy, enemy.mana,enemy.maxMana, enemy.states,turn),
-		  f'---------------------------------------------------------------------------------------------\n\n\n\n')#tengo que hacer un salto de pagina
+def statusBar(player, enemy, turn):
+	print('\n------------------------------- Barra de Status -------------------------------------------',
+	'\n>>>',player.name,'<<< \nVida: ', round(player.life, 2),'/',round(player.maxLife, 2),  'Estado Actual: ', player.states,
+	'\nEnergia: ',player.energy,'/',player.maxEnergy,'Mana: ',round(player.mana, 2),'/', round(player.maxMana, 2),
+												'\n',
+	'\n>>>',enemy.name,	'<<< \nVida: ',round(enemy.life, 2),'/',round(enemy.maxLife, 2), 'Estado Actual: ', enemy.states,
+	'\nEnergia: ',enemy.energy,'/',enemy.maxEnergy,'mana: ',round(enemy.mana, 2),'/',round(enemy.maxMana, 2), 
+	'\nTurno: ',turn,
+	'---------------------------------------------------------------------------------------------\n\n\n\n')
+	
 
 def lifeCheck(player,enemy):
 	if player.life <= 0:
@@ -33,6 +38,9 @@ def whoMovesFirst(player,enemy):
 		return [enemy, player]
 #------------------------------------------------------------    menu de combate{
 def battle(player, enemy, main):
+	playerBackup = {'maxLife':player.maxLife, 'attack':player.attack, 'defence':player.defence, 
+	'speed':player.speed, 'maxMana':player.maxMana, 'maxEnergy':player.maxEnergy}
+	
 	system('cls')
 	keepGoing = True
 	turn = 1
@@ -46,7 +54,6 @@ def battle(player, enemy, main):
 			keepGoing = main.evadeFight()
 	except:
 		print('error al seleccionar opcion')#screen
-
 
 	time.sleep(1)
 
@@ -66,9 +73,13 @@ def battle(player, enemy, main):
 		final = input('\nintro para continuar\n')
 		system('cls')
 
+	player.removeStatusAfterBattle()#	quitar buffs de batalla
+	player.resetToInitialState(*playerBackup.values())#	quitar estadisticas alteradas
+
 	if player.life > 0 and enemy.life <= 0:
 		player.gainExp( enemy.calculateLvL() )
 		itemDroped = main.dropAfterBattle()
+
 		if itemDroped != False:
 			print('consigues un objeto luego de la batalla: ', itemDroped)
 			player.addItem(*itemDroped )
@@ -92,6 +103,7 @@ class adventure():#---------------------------------------weas de la aventura
 
 	def advance(self, player, enemy):
 		encounter = random.randint(0, 9)
+		self.days = self.days + 1
 		if encounter <= self.enemyEncounterProbability:
 			system('cls')
 			enemy.reStat(*self.randomEnemy(self.listOfEnemys))
@@ -109,7 +121,7 @@ class adventure():#---------------------------------------weas de la aventura
 			print('no tienes suficiente energia para abrirte paso a travez del entorno')
 
 	def status(self):
-		print('estado de la aventura: --- Zona:', self.world, '--- nivel:' ,self.level)
+		print('estado de la aventura: --- Zona:', self.world, '--- Nivel:' ,self.level, '--- Dia', self.days)
 
 	def rest(self,player):
 		player.addSomeStat('energy', (player.maxEnergy - player.energy))
@@ -143,6 +155,20 @@ class adventure():#---------------------------------------weas de la aventura
 			return False
 
 	# --- fuera del juego ---
+	def export(self):
+		bigDick = {}
+
+		for element in self.listOfEnemys:
+			print(element)
+			bigDick.update(element)
+		
+		return bigDick
+		
+
+		#enemys = ",".join(self.listOfEnemys)
+		#return tuple(self.level,self.world,enemys,self.days)
+
+
 	def reStat(self, enemys, world, advanceEnergyCost, encounter, dropProb, posibleDrops, evadeFight ):
 		self.listOfEnemys = enemys
 		self.world = world
@@ -151,12 +177,10 @@ class adventure():#---------------------------------------weas de la aventura
 		self.dropChance = dropProb
 		self.posibleDrops = posibleDrops
 		self.evadeFightProbability = evadeFight
-	def raw(self):
-		print('parametros de adventure:\n',self.enemyEncounterProbability, self.posibleDrops)
 	# --- fuera del juego ---
 	
 	def zoneCheck(self, player, enemy):
-		if self.level == 15:
+		if self.level == 10:
 			self.evadeFightProbability = 0
 			slowText(bossDialogues[0])
 			enemy.reStat(*bosses[0].values())
@@ -167,7 +191,7 @@ class adventure():#---------------------------------------weas de la aventura
 			self.reStat(blackIronPath, *blackIronPathParameters)
 
 		elif self.level == 30:
-			print('hasta aqui he prorgamado, 15 dias. flojoMan')
+			print('hasta aqui he prorgamado, 30 dias. flojoMan')
 			
 			#cambiar variables del entorno
 

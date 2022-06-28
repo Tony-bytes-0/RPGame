@@ -1,10 +1,17 @@
 preClass=[('Life','Attack','Defence','Speed','Magic Power'),
-(10, 3, 5, 1,'Guerrero', 6, 1 , [], ['Doble Golpe']),
-(6, 1, 2, 5,'Maga', 5, 10, ['Golpe Chispa'], []),
-(5, 6, 1, 7,'Asesina', 6, 4, []), [],
-(15, 2, 2, 3,'No Muerto', 4, 8, [], []),
-(6, 5, 5, 3,'Cazador', 10, 3, [], []),
-(100, 20, 10, 10, 'admin', 100, 10, [], [])]
+(10, 6, 5, 1,'Guerrero', 6, 1 , ['Doble Golpe']),
+
+(6, 1, 2, 5,'Maga', 5, 10, ['Golpe Chispa']),
+
+(5, 6, 1, 7,'Asesina', 6, 4, ['Punto Ciego']),
+
+(16, 2, 2, 3,'No Muerto', 4, 8, []),
+
+(6, 5, 5, 3,'Cazador', 10, 1, ['Inhabilitar']),
+
+(100, 20, 10, 10, 'Soy Admin', 100, 10, ['Doble Golpe','Golpe Chispa'])]
+statList = [ 'Vida', 'Ataque', 'Defensa', 'Velocidad', 'Energia','Mana']
+
 
 parameters = { 'advanceEnergyCost': 2, 'encounter':4, 'itemDrop':5 ,
 'posibleDrops':{'pocion de vida':1, 'pocion de energia':1}, 
@@ -12,31 +19,47 @@ parameters = { 'advanceEnergyCost': 2, 'encounter':4, 'itemDrop':5 ,
 
 itemList = {'pocion de vida': 1, 'pocion de energia': 1, 'pocion de mana': 0}
 
-skillList = {'Golpe Chispa': 5, 'Rafaga de Viento': 9}
+skillList = [
+	{'name':'Golpe Chispa', 'manaCost':5, 'scaling':[0.5], 'efects':[], 'type':'magic',
+		'message':['Lanza un Puñetazo Envolviendo su Puño con Una Pequeña Flama Magica']},
 
-tecniqueList = {'Doble Golpe': 5, 'Tornado Infernal': 20}
+	{'name':'Rafaga de Viento', 'manaCost':9, 'scaling':[0.7], 'efects':[], 'type':'magic',
+		'message':['Enfocando su energia en la palma de su mano:', 'Dispara una Rafaga de Viento!']},
+#------------------------------------------------------------------------------------------------------
+	{'name':'Doble Golpe', 'energyCost': 5, 'scaling':[0.3, 0.4], 'efects':[],'type':'tecnique',
+		'message':['Golpea realizando un ataque rapido ','para rematar con un segundo golpe!']},
+	{'name':'Punto Ciego', 'energyCost': 6, 'scaling':[1],  'efects':[],'type':'tecnique',
+		'message':['Realiza un golpe rapido, tomando fuera de guardia a su rival ']},
+	{'name':'Inhabilitar', 'energyCost': 4, 'scaling':[0.3], 'efects':['-speed', 15],'type':'tecnique',
+		'message':['Golpea apuntando a los puntos de apoyo del rival']},
+	{'name':'Tornado Infernal', 'energyCost':5, 'scaling':[0.1, 0.2, 0.1, 0.3, 0.1, 0.4], 'efects':[],'type':'tecnique',
+		'message':['Empuña sus armas y comienza un frenesi de giros incesantes que cortan contra']}
+]
+
+
+tecniqueList = {'Doble Golpe': 5, 'Punto Ciego':6, 'Tiro Bajo':4,'Tornado Infernal': 20}
 
 
 zones = {'Camino del Hierro Negro': 15}
 
 bosses = [
-	{'name':'Cazador de aventureros', 'life': 45,
-	'attack': 7, 'defence': 7,
+	{'name':'Cazador de aventureros', 'life': 20,
+	'attack': 17, 'defence': 12,
 	'speed': 15, 'energy': 25,
 	'aptitude':['great'], 'mana':0,
-	'skills':[],'tecnique':['Tornado Infernal']}
+	'skills':['Tornado Infernal']}
  ]
 #----------------------------------------------------------------------------
 
 
 plainsEnemys = [
-	{'name':'goblin', 'life': 5, 'att': 5, 'def': 3, 'sp': 5,'en': 4, 'aptitude':['normal'],'mana':0,'sk':[],'tecnique':['Doble Golpe']},
-	{'name':'rata', '  life': 3, 'att': 3, 'def': 1, 'sp': 8,'en': 4, 'aptitude':['dumb'],'mana':0,'sk':[],'tecnique':[]},
-	{'name':'slime',   'life': 5, 'att': 3, 'def': 1, 'sp': 3,'en': 4, 'aptitude':['dumb'],'mana':0,'sk':[],'tecnique':[]},
-	{'name':'zombie',  'life': 14, 'att': 2, 'def': 1,'sp': 1,'en': 2, 'aptitude':['dumb'],'mana':0,'sk':[],'tecnique':[]},
+	{'name':'goblin', 'life': 5, 'att': 5, 'def': 3, 'sp': 5,'en': 4, 'aptitude':'normal','mana':0,'sk':''},
+	{'name':'rata', '  life': 3, 'att': 3, 'def': 1, 'sp': 8,'en': 4, 'aptitude':'dumb','mana':0,'sk':''},
+	{'name':'slime',   'life': 5, 'att': 3, 'def': 1, 'sp': 3,'en': 4, 'aptitude':'dumb','mana':0,'sk':''},
+	{'name':'zombie',  'life': 14, 'att': 2, 'def': 1,'sp': 1,'en': 2, 'aptitude':'dumb','mana':0,'sk':''},
 
 	{'name':'aprendiz magico','life': 8 , 'att': 1 , 'def':2,'sp': 10,'en':6,
-	'ap':['magicNormal'], 'mana':7, 'skills':['Golpe Chispa'],'tecnique':[]}
+	'ap':'magicNormal', 'mana':7, 'skills':'Golpe Chispa'}
 ]
 
 # ------------------------ CAMINO DEL HIERRO NEGRO ------------------------------
@@ -87,8 +110,20 @@ attack INTEGER,
 defence INTEGER,
 speed INTEGER,
 class varchar(60),
+states varchar(500),
+mana INTEGER,
+maxMana INTEGER,
+skills varchar(900),
+tecniques varchar(900),
 level INTEGER,
 world varchar(60),
 avalibleEnemys varchar(200),
 days INTEGER
-); SON PUTOS 15 CAMPOS LETS FUCKING GO'''
+); SON PUTOS 19 CAMPOS LETS FUCKING GO
+
+def oldStatusBar(player,enemy, turn):
+	print(f'\n------------------------------- Barra de Status -------------------------------------------',#screen
+		  '\npuntos de vida de ->{}<-: {}/{}  -  energia: {} / {} - Mana:{} / {} - estado:{}'.format( player.name, round(player.life,2), player.maxLife, player.energy, player.maxEnergy,player.mana,player.maxMana, player.states) ,
+		  '\npuntos de vida de ->{}<-: {}/{}  -  energia: {} / {} - Mana:{} / {} - estado:{}\nturno: {}\n'.format(enemy.name, round(enemy.life,  2) , enemy.maxLife, enemy.energy, enemy.maxEnergy, enemy.mana,enemy.maxMana, enemy.states,turn),
+		  f'---------------------------------------------------------------------------------------------\n\n\n\n')#tengo que hacer un salto de pagina
+'''
