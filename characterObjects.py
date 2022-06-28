@@ -54,14 +54,14 @@ class character():
 
     def calculateDamage(self, dmg,  attacker):
         r = random.randint(0, 99)
-        if 'En Guardia' in self.states:#reducir daño 50 %
-            dmg = dmg * 0.5
-        elif 'Cansado' in self.states:#aumentar daño en 20 %
-            dmg = dmg * 1.2
+        if 'En Guardia' in self.states:#reducir daño 60 %
+            dmg = dmg * 0.6
+        elif 'Cansado' in self.states:#aumentar daño en 50 %
+            dmg = dmg * 1.5
         if dmg < 1:
             dmg = 1
         #--------------- calculo de evasion ---------------------
-        evadeProb = 10 + (attacker.speed - self.speed)
+        evadeProb = 2 + (attacker.speed - self.speed)
         print('evade prob:',evadeProb,'random int',r)#depuracion
         if evadeProb >= r:
             print(self.name,' ha evitado el ataque!!!')#screen
@@ -162,7 +162,7 @@ class character():
                 
 
         else:
-            print('no paso nada aqui en el metodo de usar skills uwu')
+            print('no paso nada aqui en el metodo de usar skills uwu')#depuracion
            
         if select in ['Rafaga de Viento', 'Golpe Chispa']:#skills que restan uno de energia
             self.addSomeStat('energy', -1)
@@ -182,30 +182,33 @@ class character():
             if x in self.skills and self.mana >= skillList[str(x)]:#condiciones de uso
                 print(i ,'._', x)
                 ready.append(x)
-                i = i + 1
+
 
             elif x in self.tecniques and self.energy >= tecniqueList[str(x)]:#condiciones de uso
                 print(i ,'._', x)
                 ready.append(x)
-                i = i + 1
 
         if ready != []:
             return ready
         
         else:
-            return []
+            return False
 
 
-    def tecniquesAvalible(self):
+    '''    def tecniquesAvalible(self):
         ready = self.skillsAndTecniquesAvalible()
         i = 0
         for x in tecniqueList.keys():
             if x in self.tecniques and self.energy >= tecniqueList[str(x)]:#condiciones de uso
                 print(i ,'._', x)
-                ready.append(x)
+                ready.append(x)'''
 
     def useSkill(self, defender):#disponible en el menu del jugador
         ready = self.skillsAndTecniquesAvalible()
+        if ready == False:
+            print('En Terminos de Habilidades, no Hay Habilidades Disponibles')
+            return True
+
         try:
             op = int(input('\n-->'))
             self.tecniqueSumary(ready[op], defender)
@@ -334,8 +337,8 @@ class mainCharacter(character):#mc personaje principal
 
     def turn(self,enemy):#------------------------------------aqui esta el menu del turno del personaje------------------
         loop=True
-        menu = ['\n0._ limpiar consola','\n1._ Atacar','\n2._ Guardia',
-        '\n3._ Habilidades' ,'\n4._Estado','\n5._ Esperar','\n6._ Objetos']
+        menu = ['0._ limpiar consola','1._ Atacar','2._ Guardia',
+        '3._ Habilidades' ,'4._Estado','5._ Esperar','6._ Objetos']
         self.cleaner()
         if self.energy <= 1:
             print(self.name,' esta demasiado cansado para actuar')
@@ -343,9 +346,8 @@ class mainCharacter(character):#mc personaje principal
 
         while loop:
             time.sleep(0.3)#delay
-            for options in menu:
-                print(options)
-            op = input('\n---> ')
+            print()
+            op = input(str(menu)+'\n---> ')
             print('\n')
             if op =='0':
                 system('cls')
@@ -377,30 +379,7 @@ class enemy(character):
     def __init__(self,na,li,att,de,sp,en, ap, mana, skills, tecniques):
         super().__init__(na,li,att,de,sp, en, mana, skills, tecniques)
         self.aptitude = ap
-    #clases mutadas--------------
 
-    def skillsAndTecniquesAvalible(self):#comprueba si el objeto posee tecnicas asi como sus requerimientos de mana
-        all = {}
-        all.update(skillList)
-        all.update(tecniqueList)
-        ready = []
-        i = 0
-        for x in all.keys():
-            if x in self.skills and self.mana >= skillList[str(x)]:#condiciones de uso
-                ready.append(x)
-                i = i + 1
-
-            elif x in self.tecniques and self.energy >= tecniqueList[str(x)]:#condiciones de uso
-                ready.append(x)
-                i = i + 1
-
-        if ready != []:
-            return ready
-        
-        else:
-            return []
-
-    #clases mutadas--------------
     def reStat(self,na,li,att,de,sp,en, ap, mana, skills, tecniques):
         self.name = na
         self.life = li
@@ -423,6 +402,7 @@ class enemy(character):
 
     def turn(self, player):
         op = random.randint(0,9)#tirada de dados del 0 al 9, basicamente
+        print(op)
         time.sleep(0.3)
 
         if 'dumb' in self.aptitude:# 90% atacar 10% esperar
@@ -445,15 +425,17 @@ class enemy(character):
 
                 elif op == 9 and self.energy < (self.maxEnergy * 0.9):
                     self.useItem('pocion de energia')
+                    print(self.name, ' Trata de usar un item, pero no le es posible')
                 else:
                     self.basicAttack(player)
             else:
                 self.wait()
 #-----------------------------------------------------------
-        elif 'magicNormal' in self.aptitude:# 70% tratar de lanzar skills 
-            if self.energy >= 1 and self.skillsAndTecniquesAvalible() != False :#mientras halla 1 energia y skill disponible
-                if op <= 6:
-                    self.tecniqueSumary(random.choice(self.skills), player) #usar skill aleatoria
+        elif 'magicNormal' in self.aptitude:# 60% tratar de lanzar skills / curarse
+            
+            if self.energy >= 1:#mientras halla 1 de energia
+                if op <= 7 and self.skillsAndTecniquesAvalible() != False:
+                    self.tecniqueSumary(random.choice(self.skillsAndTecniquesAvalible()), player) #usar skill aleatoria
                    
                 elif op <= 7 and self.life <= (self.maxLife * 0.5):
                     self.useItem('pocion de energia')
@@ -461,7 +443,7 @@ class enemy(character):
                 elif op == 8:
                     self.guard()
 
-            elif self.energy >= 2:
+            if self.energy >= 2:
                 self.basicAttack(player)
 
             else:

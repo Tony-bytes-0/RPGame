@@ -20,7 +20,7 @@ tecniqueList = {'Doble Golpe': 5, 'Tornado Infernal': 20}
 zones = {'Camino del Hierro Negro': 15}
 
 bosses = [
-	{'name':'Cazador de aventureros', 'life': 45,
+	{'name':'Cazador de aventureros', 'life': 20,
 	'attack': 7, 'defence': 7,
 	'speed': 15, 'energy': 25,
 	'aptitude':['great'], 'mana':0,
@@ -91,4 +91,11 @@ level INTEGER,
 world varchar(60),
 avalibleEnemys varchar(200),
 days INTEGER
-); SON PUTOS 15 CAMPOS LETS FUCKING GO'''
+); SON PUTOS 15 CAMPOS LETS FUCKING GO
+
+def oldStatusBar(player,enemy, turn):
+	print(f'\n------------------------------- Barra de Status -------------------------------------------',#screen
+		  '\npuntos de vida de ->{}<-: {}/{}  -  energia: {} / {} - Mana:{} / {} - estado:{}'.format( player.name, round(player.life,2), player.maxLife, player.energy, player.maxEnergy,player.mana,player.maxMana, player.states) ,
+		  '\npuntos de vida de ->{}<-: {}/{}  -  energia: {} / {} - Mana:{} / {} - estado:{}\nturno: {}\n'.format(enemy.name, round(enemy.life,  2) , enemy.maxLife, enemy.energy, enemy.maxEnergy, enemy.mana,enemy.maxMana, enemy.states,turn),
+		  f'---------------------------------------------------------------------------------------------\n\n\n\n')#tengo que hacer un salto de pagina
+'''

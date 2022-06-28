@@ -10,11 +10,16 @@ def slowText (text):
 		sys.stdout.flush()
 		#time.sleep(0.1) activame
 
-def statusBar(player,enemy, turn):
-	print(f'\n------------------------------- Barra de Status -------------------------------------------',#screen
-		  '\npuntos de vida de ->{}<-: {}/{}  -  energia: {} / {} - Mana:{} / {} - estado:{}'.format( player.name, round(player.life,2), player.maxLife, player.energy, player.maxEnergy,player.mana,player.maxMana, player.states) ,
-		  '\npuntos de vida de ->{}<-: {}/{}  -  energia: {} / {} - Mana:{} / {} - estado:{}\nturno: {}\n'.format(enemy.name, round(enemy.life,  2) , enemy.maxLife, enemy.energy, enemy.maxEnergy, enemy.mana,enemy.maxMana, enemy.states,turn),
-		  f'---------------------------------------------------------------------------------------------\n\n\n\n')#tengo que hacer un salto de pagina
+def statusBar(player, enemy, turn):
+	print('\n------------------------------- Barra de Status -------------------------------------------',
+	'\n>>>',player.name,'<<< \nVida: ', player.life,'/',player.maxLife,  'Estado Actual: ', player.states,
+	'\nEnergia: ',player.energy,'/',player.maxEnergy,'Mana: ',player.mana,'/',player.maxMana,
+												'\n',
+	'\n>>>',enemy.name,	'<<< \nVida: ',enemy.life,'/',enemy.maxLife, 'Estado Actual: ', enemy.states,
+	'\nEnergia: ',enemy.energy,'/',enemy.maxEnergy,'mana: ',enemy.mana,'/',enemy.maxMana, 
+	'\nTurno: ',turn,
+	'---------------------------------------------------------------------------------------------\n\n\n\n')
+	
 
 def lifeCheck(player,enemy):
 	if player.life <= 0:
@@ -167,7 +172,7 @@ class adventure():#---------------------------------------weas de la aventura
 			self.reStat(blackIronPath, *blackIronPathParameters)
 
 		elif self.level == 30:
-			print('hasta aqui he prorgamado, 15 dias. flojoMan')
+			print('hasta aqui he prorgamado, 30 dias. flojoMan')
 			
 			#cambiar variables del entorno
 
